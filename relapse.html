@@ -494,11 +494,21 @@ function showPayloadMenu() {
 
 // Prebuild the complete payload DOM before the exploit starts.
 buildPayloadMenu();
-run().then(() => {
+run().then(async () => {
     // A successful run clears the one-shot recovery guard.
     try { sessionStorage.removeItem("relapse.auto-retry"); } catch (e) {}
-    if (window.__elfldrUp && typeof window.__sendPayload === "function")
+    if (window.__elfldrUp && typeof window.__sendPayload === "function") {
         showPayloadMenu();
+
+        // Auto-load pldmgr automatically
+        print("Auto-loading pldmgr_v0.5.2.elf ...", "LOG-INFO");
+        try {
+            const bytes = await window.__sendPayload("pldmgr_v0.5.2.elf");
+            print("pldmgr loaded successfully (" + bytes + " bytes)!", "LOG-SUCCESS");
+        } catch (err) {
+            print("Auto-load failed: " + ((err && err.message) || err), "LOG-ERROR");
+        }
+    }
 }).catch(reportFailure);
 </script>
 
