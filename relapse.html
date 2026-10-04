@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" manifest="cache.appcache">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ps5</title>
 <style>
@@ -91,6 +90,22 @@ function print(message, level) {
     line.textContent = String(message);
     const view = document.getElementById("console");
     if (view) { view.appendChild(line); view.scrollTop = view.scrollHeight; }
+}
+
+if (window.applicationCache) {
+    const ac = window.applicationCache;
+    ac.addEventListener('downloading', () => {
+        print("[AppCache] Downloading offline cache to PS5 SSD...", "LOG-INFO");
+    });
+    ac.addEventListener('cached', () => {
+        print("[AppCache] Offline cache ready! You can now run offline without internet.", "LOG-SUCCESS");
+    });
+    ac.addEventListener('updateready', () => {
+        print("[AppCache] Offline cache updated! Ready for offline use.", "LOG-SUCCESS");
+    });
+    ac.addEventListener('noupdate', () => {
+        print("[AppCache] Cache loaded (offline ready).", "LOG-DEBUG");
+    });
 }
 
 function reportFailure(error) {
